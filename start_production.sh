@@ -1,42 +1,44 @@
 #!/bin/bash
 
-echo "Iniciando servidor de produccion para PDF Downloader..."
+echo "Starting production server for PDF Downloader..."
 
-# Verificar si Python está instalado
+# Check if Python is installed
 if ! command -v python3 &> /dev/null; then
-    echo "Error: Python 3 no está instalado."
-    echo "Por favor, instale Python 3 y vuelva a intentarlo."
+    echo "Error: Python 3 is not installed."
+    echo "Please install Python 3 and try again."
     exit 1
 fi
 
-# Verificar si existe el entorno virtual, si no, crearlo
+# Check if virtual environment exists, if not, create it
 if [ ! -d "venv" ]; then
-    echo "Creando entorno virtual..."
+    echo "Creating virtual environment..."
     python3 -m venv venv
 fi
 
-# Activar el entorno virtual
+# Activate the virtual environment
 source venv/bin/activate
 
-# Instalar dependencias
-echo "Instalando dependencias..."
+# Install dependencies
+echo "Installing dependencies..."
 pip install -r requirements.txt
 
-# Crear directorio de descargas si no existe
+# Create downloads directory if it doesn't exist
 if [ ! -d "downloads" ]; then
-    echo "Creando directorio de descargas..."
-    mkdir downloads
+    echo "Creating downloads directory..."
+    mkdir -p downloads
+    chmod 755 downloads
 fi
 
-# Crear directorio temporal si no existe
+# Create temporary directory if it doesn't exist
 if [ ! -d "temp" ]; then
-    echo "Creando directorio temporal..."
-    mkdir temp
+    echo "Creating temporary directory..."
+    mkdir -p temp
+    chmod 755 temp
 fi
 
-# Iniciar el servidor de producción
-echo "Iniciando servidor de produccion en http://127.0.0.1:5000"
+# Start the production server
+echo "Starting production server at http://127.0.0.1:5000"
 python run_production.py
 
-# El entorno virtual se desactivará automáticamente cuando se cierre el script
+# The virtual environment will be automatically deactivated when the script closes
 deactivate
