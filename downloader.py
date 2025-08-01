@@ -37,7 +37,19 @@ def random_delay():
     return delay
 
 # Function to download the PDF
-def download_pdf(output_dir=None):
+def download_pdf(output_dir=None, return_path=False):
+    """Download the daily PDF from dailyluach.com
+    
+    Args:
+        output_dir (str, optional): Directory to save the downloaded PDF. Defaults to script directory.
+        return_path (bool, optional): Whether to return the path to the downloaded file. Defaults to False.
+        
+    Returns:
+        If return_path is False:
+            bool: True if download was successful, False otherwise.
+        If return_path is True:
+            tuple: (bool, str) - Success status and path to the downloaded file (or None if failed).
+    """
     # Use default output directory if none specified
     if output_dir is None:
         output_dir = DEFAULT_OUTPUT_DIR
@@ -116,6 +128,8 @@ def download_pdf(output_dir=None):
         # Check if the file already exists
         if os.path.exists(output_path):
             print(f"[{datetime.now()}] File {filename} already exists. Skipping download.")
+            if return_path:
+                return True, output_path
             return True
         
         # Add another random delay before downloading
@@ -134,13 +148,19 @@ def download_pdf(output_dir=None):
                     f.write(chunk)
         
         print(f"[{datetime.now()}] Download completed: {output_path}")
+        if return_path:
+            return True, output_path
         return True
     
     except requests.exceptions.RequestException as e:
         print(f"[{datetime.now()}] Error making the request: {e}")
+        if return_path:
+            return False, None
         return False
     except Exception as e:
         print(f"[{datetime.now()}] Unexpected error: {e}")
+        if return_path:
+            return False, None
         return False
 
 # Main function
@@ -163,13 +183,17 @@ if __name__ == "__main__":
     main()
 
 # Function to be called from external scripts or n8n
-def run_download(output_dir=None):
+def run_download(output_dir=None, return_path=False):
     """Function that can be imported and called from external scripts or n8n
     
     Args:
         output_dir (str, optional): Directory to save the downloaded PDF. Defaults to script directory.
+        return_path (bool, optional): Whether to return the path to the downloaded file. Defaults to False.
         
     Returns:
-        bool: True if download was successful, False otherwise.
+        If return_path is False:
+            bool: True if download was successful, False otherwise.
+        If return_path is True:
+            tuple: (bool, str) - Success status and path to the downloaded file (or None if failed).
     """
-    return download_pdf(output_dir=output_dir)
+    return download_pdf(output_dir=output_dir, return_path=return_path)
